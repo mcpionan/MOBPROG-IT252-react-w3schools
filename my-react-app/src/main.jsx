@@ -1,61 +1,59 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { createRoot } from 'react-dom/client';
 
-function MyForm() {
-  const [inputs, setInputs] = useState({});
+const initialScore = [
+  {
+    id: 1,
+    score: 0,
+    name: "John",
+  },
+  {
+    id: 2,
+    score: 0,
+    name: "Sally",
+  },
+];
 
-  const handleChange = (e) => {
-    const target = e.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    setInputs(values => ({...values, [name]: value}))
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "INCREASE":
+      return state.map((player) => {
+        if (player.id === action.id) {
+          return { ...player, score: player.score + 1 };
+        } else {
+          return player;
+        }
+      });
+    default:
+      return state;
   }
+};
 
-  const handleSubmit = (event) => {
-    let fillings = '';
-    if (inputs.tomato) fillings += 'tomato';
-    if (inputs.onion) {
-      if (inputs.tomato) fillings += ' and ';
-      fillings += 'onion';
-    }
-    if (fillings == '') fillings = 'no fillings';
-    alert(`${inputs.firstname} wants a burger with ${fillings}`);
-    event.preventDefault();
+function Score() {
+  const [score, dispatch] = useReducer(reducer, initialScore);
+
+  const handleIncrease = (player) => {
+    dispatch({ type: "INCREASE", id: player.id });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>My name is:
-      <input 
-        type="text" 
-        name="firstname" 
-        value={inputs.firstname} 
-        onChange={handleChange}
-      />
-      </label>
-
-      <p>I want a burger with:</p>
-      <label>Tomato:
-      <input 
-        type="checkbox" 
-        name="tomato" 
-        checked={inputs.tomato} 
-        onChange={handleChange}
-      />
-      </label>
-      <label>Onion:
-        <input 
-          type="checkbox" 
-          name="onion" 
-          checked={inputs.onion} 
-          onChange={handleChange}
-        />
-        </label>
-        <button type="submit">Submit</button>
-    </form>
-  )
+    <>
+      {score.map((player) => (
+        <div key={player.id}>
+          <label>
+            <input
+              type="button"
+              onClick={() => handleIncrease(player)}
+              value={player.name}
+            />
+            {player.score}
+          </label>
+        </div>
+      ))}
+    </>
+  );
 }
 
 createRoot(document.getElementById('root')).render(
-  <MyForm />
+  <Score />
 );
