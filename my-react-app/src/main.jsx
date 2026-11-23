@@ -1,3 +1,5 @@
+import { createRoot } from 'react-dom/client'
+
 function Car() {
   const myobj = {
     name: "Fiat",
@@ -10,3 +12,7 @@ function Car() {
     </>
   );
 }
+
+createRoot(document.getElementById('root')).render(
+  <Car />
+);
